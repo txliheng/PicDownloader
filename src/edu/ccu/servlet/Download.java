@@ -1,6 +1,7 @@
 package edu.ccu.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
@@ -9,7 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.ccu.utils.DownloadPic;
+import javax.servlet.http.HttpSession;
+
+//import edu.ccu.utils.DownloadPic;
+import edu.ccu.utils.ImageDownloader;
 
 /**
  * Servlet implementation class Download
@@ -17,20 +21,19 @@ import edu.ccu.utils.DownloadPic;
 @WebServlet(description = "下载图片", urlPatterns = { "/Download" })
 public class Download extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-//	private int pageNow=1;
-//	private String keyword=null;
-//    public Download(int pageNow,String keyword) {
-//       this.pageNow = pageNow;
-//       this.keyword = keyword;
-//    }
-
-	
+	private HttpSession session = null;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		this.doPost(request, response);
 	}
 
-	
+	private DownloadTask downloadTask;
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter out=response.getWriter();
+
+		session = request.getSession();
 		String pagenow = request.getParameter("pagenow");
 		int pageNow=1;
 		if(!"".equals(pagenow)&&pagenow!=null){
@@ -38,20 +41,27 @@ public class Download extends HttpServlet {
 		}
 		//%E6%9D%A8%E9%A2%96
 		String keyword = request.getParameter("keyword");
-		keyword = new String(keyword.getBytes("ISO8859-1"),"utf-8");
+		/*
+		 * 如果是get方式提交，需要转码；如果是post方式提交则不需要转码？
+		 */
+		//keyword = new String(keyword.getBytes("ISO8859-1"),"utf-8");
 		//System.out.println(keyword);
 		//System.out.println(URLEncoder.encode(keyword, "utf-8"));
 		try {
 			if(!"".equals(keyword)&&keyword!=null){
-				String path="http://image.baidu.com/i?tn=resultjsonavatarnew&ie=utf-8&word="+URLEncoder.encode(keyword, "utf-8")+"&cg=star&pn="+60*pageNow+"&rn=60&z=&fr=&width=&height=&lm=-1&ic=0&s=0/";
-				
-				DownloadPic.sendHttpRequest2(path);
-				request.setAttribute("message", "下载成功");
-				request.getRequestDispatcher("/WEB-INF/view/success.jsp").forward(request, response);
+				int pageSize = 60;
+				String path="http://image.baidu.com/i?tn=resultjsonavatarnew&ie=utf-8&word="+URLEncoder.encode(keyword, "utf-8")+"&cg=star&pn="+pageSize*pageNow+"&rn="+pageSize+"&z=&fr=&width=&height=&lm=-1&ic=0&s=0/";
+				downloadTask=new DownloadTask(path);
+				new Thread(downloadTask).start();
+				//DownloadPic.sendHttpRequest2(path);
+				//new downloadThread(path).start();
+				//request.setAttribute("message", "下载中...");
+				//request.getRequestDispatcher("/WEB-INF/view/downloading.jsp").forward(request, response);
 				return;
 			}else{
-				request.setAttribute("message", "请输入明星的名字");
-				request.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(request, response);
+				out.println("请输入明星的名字");
+				//request.setAttribute("message", "请输入明星的名字");
+				//request.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(request, response);
 
 			}			
 		} catch (Exception e) {
@@ -59,5 +69,22 @@ public class Download extends HttpServlet {
 		}
 
 	}
+	private final class DownloadTask implements Runnable {
 
+		private String path;
+	
+		public DownloadTask(String path){
+			this.path = path;
+		}
+		
+		public void run() {
+			try {
+				new ImageDownloader(session).sendHttpRequest2(path);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
 }

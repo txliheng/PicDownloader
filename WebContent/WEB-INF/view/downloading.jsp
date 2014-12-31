@@ -4,10 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>下载成功</title>
+<title>Insert title here</title>
 </head>
 <body>
 <h3>${message}</h3>
-
 </body>
 </html>

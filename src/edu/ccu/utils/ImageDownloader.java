@@ -10,11 +10,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.servlet.http.HttpSession;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DownloadPic {
+public class ImageDownloader {
+	private HttpSession session;
+	public ImageDownloader(HttpSession session) {
+		this.session = session;
+	}
 	public void sendHttpRequest2( String path)
 	{
 		try {
@@ -72,8 +78,12 @@ public class DownloadPic {
 			String objUrl = jsonArray.getJSONObject(i).getString("objURL");
 			try {
 				sendHttpRequest(objUrl);
-				System.out.println("Sucess--下载"+objUrl+"完成");
+				session.setAttribute("downloadImageNo",i+1);
+				session.setAttribute("imageUrl", "Sucess--下载"+objUrl+"完成");
+				//System.out.println("Sucess--下载"+objUrl+"完成");
+				//System.out.println(session.getId());
 			} catch (Exception e) {
+				session.setAttribute("imageUrl", e.getMessage());
 				System.out.println(e.getMessage());
 			}
 
@@ -91,7 +101,7 @@ public class DownloadPic {
 			conn.setRequestMethod("GET");
 			conn.connect();
 			if(conn.getResponseCode() == 200){
-				int imageSize = conn.getContentLength();
+				//int imageSize = conn.getContentLength();
 				InputStream in = conn.getInputStream();
 				downloadPic(objUrl, in);
 				in.close();
@@ -100,6 +110,7 @@ public class DownloadPic {
 				throw new Exception("Error:--下载"+objUrl+"失败，错误码："+conn.getResponseCode());
 			}			
 		} catch (Exception e) {
+			session.setAttribute("imageUrl","Error:--下载"+objUrl+"失败，"+e.getMessage());
 			System.out.println("Error:--下载"+objUrl+"失败，"+e.getMessage());
 		}
 
