@@ -27,7 +27,7 @@ function download(){
 	//alert(keyword.value);
 	//alert(pagenow.value);
 	//alert($("#keyword").val()) ;
-	
+	//document.getElementById("imageUrl").value="";
 	//$.get("http://localhost:8080/DownloadPic/Download?keyword=" + keyword.value+"&pagenow="+pagenow.value,null,callback);
 	$.post("http://localhost:8080/DownloadPic/Download",{keyword:keyword.value,pagenow:pagenow.value},callback);
 	setTimeout(progress, 1000);

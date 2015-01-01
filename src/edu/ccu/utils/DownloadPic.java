@@ -91,7 +91,7 @@ public class DownloadPic {
 			conn.setRequestMethod("GET");
 			conn.connect();
 			if(conn.getResponseCode() == 200){
-				int imageSize = conn.getContentLength();
+				//int imageSize = conn.getContentLength();
 				InputStream in = conn.getInputStream();
 				downloadPic(objUrl, in);
 				in.close();

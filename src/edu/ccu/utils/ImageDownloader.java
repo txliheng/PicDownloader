@@ -37,7 +37,7 @@ public class ImageDownloader {
 				downloadPics(sb);
 				
 			}else{
-				throw new RuntimeException("返回错误代码："+conn.getResponseCode()+"\t返回错误信息："+conn.getResponseMessage());
+				throw new Exception("返回错误代码："+conn.getResponseCode()+"\t返回错误信息："+conn.getResponseMessage());
 			}			
 		} catch (Exception e) {
 			e.printStackTrace();

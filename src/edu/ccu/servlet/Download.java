@@ -1,7 +1,7 @@
 package edu.ccu.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+//import java.io.PrintWriter;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
@@ -31,7 +31,7 @@ public class Download extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
-		PrintWriter out=response.getWriter();
+//		PrintWriter out=response.getWriter();
 
 		session = request.getSession();
 		String pagenow = request.getParameter("pagenow");
@@ -59,7 +59,7 @@ public class Download extends HttpServlet {
 				//request.getRequestDispatcher("/WEB-INF/view/downloading.jsp").forward(request, response);
 				return;
 			}else{
-				out.println("请输入明星的名字");
+				//out.println("请输入明星的名字");
 				//request.setAttribute("message", "请输入明星的名字");
 				//request.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(request, response);
 
